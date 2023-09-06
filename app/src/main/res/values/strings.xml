@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PokeApp</string>
+    <string name="category_hp">HP</string>
+    <string name="category_attack">Attack</string>
+    <string name="category_defense">Defense</string>
+    <string name="category_attack_special">Attack Special</string>
+    <string name="category_defense_special">Defense Special</string>
+    <string name="category_speed">Speed</string>
+</resources>
