@@ -1,8 +1,6 @@
-package com.fa.pokeapp.common.Utils
+package com.fa.pokeapp.common.utils
 
 import com.fa.pokeapp.R
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 object CommonUtils {
 

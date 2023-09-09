@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fa.pokeapp.R
+import com.fa.pokeapp.BR
 import com.fa.pokeapp.common.entities.Pokemon
 
 class PokeAdapter(
@@ -18,6 +19,8 @@ class PokeAdapter(
 
     override fun onBindViewHolder(holder: PokeViewHolder, position: Int) {
         val item = pokemonList[position]
+        holder.mBinding.setVariable(BR.pokemon, item)
+        holder.mBinding.executePendingBindings()
         holder.bind(item, onItemSelected)
     }
 

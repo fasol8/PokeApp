@@ -1,25 +1,29 @@
 package com.fa.pokeapp.mainModule.view
 
-import android.annotation.SuppressLint
 import android.graphics.drawable.GradientDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.os.bundleOf
+import androidx.core.os.ParcelableCompat
+import androidx.core.os.ParcelCompat
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.fa.pokeapp.R
-import com.fa.pokeapp.common.Utils.CommonUtils
-import com.fa.pokeapp.common.Utils.Constants
+import com.fa.pokeapp.common.utils.CommonUtils
+import com.fa.pokeapp.common.utils.Constants
 import com.fa.pokeapp.common.entities.Pokemon
 import com.fa.pokeapp.common.entities.Stat
 import com.fa.pokeapp.common.entities.Type
 import com.fa.pokeapp.databinding.ActivityPokemonDetailBinding
+import com.fa.pokeapp.mainModule.viewmodel.PokeDetailViewModel
 import com.squareup.picasso.Picasso
 import kotlin.math.roundToInt
 
 class PokemonDetail : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityPokemonDetailBinding
+    private lateinit var viewModel: PokeDetailViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,20 +31,16 @@ class PokemonDetail : AppCompatActivity() {
         setContentView(mBinding.root)
         val selectedPokemon: Pokemon? = intent.getParcelableExtra(Constants.EXTRA_ID)
         if (selectedPokemon != null) {
+            viewModel = PokeDetailViewModel(selectedPokemon)
+            mBinding.viewModel = viewModel
             getUI(selectedPokemon)
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun getUI(pokeDetail: Pokemon) {
         val url =
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokeDetail.id}.png"
-
         Picasso.get().load(url).into(mBinding.ivPokeDetail)
-        mBinding.tvPokeName.text = pokeDetail.name
-        mBinding.tvPokeId.text = "#" + CommonUtils.getIdNumber(pokeDetail.id)
-        mBinding.tvWeight.text = "Weight: ${pokeDetail.weight.toString()}"
-        mBinding.tvHeight.text = "Height: ${pokeDetail.height.toString()}"
         prepareTypes(pokeDetail.types)
         prepareStats(pokeDetail.stats)
     }
@@ -76,12 +76,6 @@ class PokemonDetail : AppCompatActivity() {
         mBinding.viewSpecialAttack.setBackgroundResource(prepareStatsColor(stats[3].base_stat))
         mBinding.viewSpecialDefense.setBackgroundResource(prepareStatsColor(stats[4].base_stat))
         mBinding.viewSpeed.setBackgroundResource(prepareStatsColor(stats[5].base_stat))
-        mBinding.tvHP.text = stats[0].base_stat.toString()
-        mBinding.tvAttack.text = stats[1].base_stat.toString()
-        mBinding.tvDefense.text = stats[2].base_stat.toString()
-        mBinding.tvAttackSpecial.text = stats[3].base_stat.toString()
-        mBinding.tvDefenseSpecial.text = stats[4].base_stat.toString()
-        mBinding.tvSpeed.text = stats[5].base_stat.toString()
     }
 
     private fun prepareStatsColor(baseStat: Int): Int {
@@ -111,5 +105,4 @@ class PokemonDetail : AppCompatActivity() {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, resources.displayMetrics)
             .roundToInt()
     }
-
 }

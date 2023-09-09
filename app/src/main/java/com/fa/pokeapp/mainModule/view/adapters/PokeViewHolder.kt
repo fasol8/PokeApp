@@ -4,28 +4,25 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.fa.pokeapp.common.Utils.CommonUtils
-import com.fa.pokeapp.common.dataAccess.PokeServer
+import com.fa.pokeapp.common.utils.CommonUtils
 import com.fa.pokeapp.common.entities.Pokemon
 import com.fa.pokeapp.databinding.ItemPokemonBinding
+import com.fa.pokeapp.mainModule.model.MainRepository
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
 
 class PokeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+//class PokeViewHolder(private val binding:ItemPokemonBinding) : RecyclerView.ViewHolder(view) {
 
-    private val mBinding = ItemPokemonBinding.bind(view)
-    private lateinit var mRetrofit: Retrofit
+    val mBinding = ItemPokemonBinding.bind(view)
+    private val repository = MainRepository()
 
     fun bind(item: Pokemon, onItemSelected: (Pokemon) -> Unit) {
-        mRetrofit = getRetrofit()
 
-        mBinding.tvPokeName.text = item.name
+//        mBinding.tvPokeName.text = item.name
         val url =
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${item.id}.png"
         Picasso.get().load(url).into(mBinding.ivPokemon)
@@ -34,25 +31,18 @@ class PokeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         mBinding.root.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val detailPokemon: Pokemon =
-                        mRetrofit.create(PokeServer::class.java).getPokemon(item.name)
+                    val detailPokemon: Pokemon = repository.getFetchPokemonData(item.name)
                     if (detailPokemon != null) {
                         withContext(Dispatchers.Main) {
                             onItemSelected(detailPokemon)
                         }
                     }
                 } catch (e: Exception) {
-                        Toast.makeText(itemView.context, "Network error occurred", Toast.LENGTH_SHORT).show()
-                        Log.i("ERROR", "ERROR: ${e.message}")
-                    }
+                    Toast.makeText(itemView.context, "Network error occurred", Toast.LENGTH_SHORT)
+                        .show()
+                    Log.i("ERROR", "ERROR: ${e.message}")
                 }
             }
         }
-
-    private fun getRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
     }
 }
